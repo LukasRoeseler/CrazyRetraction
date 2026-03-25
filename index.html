@@ -216,8 +216,9 @@
         const gameOverScreen = document.getElementById('game-over-screen');
         const finalScoreEl = document.getElementById('final-score');
 
-        // Audio setup (Cloned on click to allow overlapping sounds)
+        // Audio setup
         const stampAudioTemplate = new Audio('Sounds/freesound_community-stamp-102627.mp3');
+        const gameOverAudio = new Audio('Sounds/audley_fergine-game-over-classic-206486.mp3');
 
         let score = 0;
         let timeLeft = 30;
@@ -227,66 +228,14 @@
         let timerId;
         let papers = [];
 
-        // 100 Titles (Generated & extracted from real dataset structures)
+        // Add your 100 generated titles here
         const titles = [
             "Preoperative risk factors for intraabdominal adhesions should not contraindicate surgical laparoscopy for infertility",
             "Effect of cervical lidocaine-prilocaine cream on pain perception during copper T380A intrauterine device insertion",
             "Management of Spontaneous Labor in Primigravidae: Labor Scale versus WHO Partograph (SLiP Trial)",
             "AFAP1-AS1 Promotes Epithelial-Mesenchymal Transition and Tumorigenesis Through Wnt/β-Catenin Signaling Pathway",
-            "MiR-221/222 Ameliorates Deoxynivalenol-Induced Apoptosis and Proliferation Inhibition in Intestinal Epithelial Cells",
-            "Paeonol Suppresses Proliferation and Motility of Non-Small-Cell Lung Cancer Cells by Disrupting STAT3/NF-κB Signaling",
-            "Application of artificial intelligence-assisted Traditional Chinese medicine formula granules in bone and joint degenerative diseases",
-            "LncRNA MALAT1 promotes tumor progression in gastric cancer by targeting miR-124",
-            "Circular RNA hsa_circ_0000069 regulates proliferation and apoptosis in cervical cancer cells",
-            "Knockdown of circRNA_100876 suppresses proliferation and metastasis of osteosarcoma",
-            // ... padding out to 100 titles to keep the code robust
-            "Silencing of long noncoding RNA SNHG1 inhibits cell growth in lung cancer", "Expression of miR-21 in breast cancer tissues and its clinical significance",
-            "Protective effects of ginsenoside Rg1 on ischemia-reperfusion injury in rat liver", "Overexpression of miR-155 promotes cell proliferation in hepatocellular carcinoma",
-            "The therapeutic effect of traditional Chinese medicine in treating type 2 diabetes", "Identification of novel biomarkers for early diagnosis of Alzheimer's disease",
-            "Role of the PI3K/AKT signaling pathway in regulating cell apoptosis", "Efficacy of acupuncture in treating chronic lower back pain: a meta-analysis",
-            "Molecular mechanisms of drug resistance in targeted therapy for melanoma", "Effect of green tea extract on weight loss in obese adults: a randomized trial",
-            "MicroRNA-122 promotes hepatitis C virus replication in liver cells", "Antioxidant activity of flavonoids isolated from Scutellaria baicalensis",
-            "The impact of gut microbiota on the development of autoimmune diseases", "Stem cell therapy for spinal cord injury: current status and future perspectives",
-            "Genetic variants associated with increased risk of cardiovascular disease", "Effects of sleep deprivation on cognitive function and memory consolidation",
-            "The role of vitamin D in preventing respiratory tract infections", "Evaluation of a novel vaccine candidate against Zika virus",
-            "Biomechanical analysis of different techniques for ACL reconstruction", "Nanoparticle-based drug delivery systems for targeted cancer therapy",
-            "LncRNA HOTAIR promotes tumor growth and metastasis in colorectal cancer", "MicroRNA-146a regulates inflammatory responses in rheumatoid arthritis",
-            "Effects of curcumin on the proliferation and apoptosis of prostate cancer cells", "The relationship between air pollution and respiratory diseases",
-            "Dietary interventions for managing irritable bowel syndrome symptoms", "Pharmacokinetics and pharmacodynamics of a new antiepileptic drug",
-            "The role of autophagy in neurodegenerative diseases", "Efficacy of cognitive behavioral therapy for treating depression in adolescents",
-            "Biomarkers of oxidative stress in patients with chronic kidney disease", "The impact of exercise on insulin sensitivity in patients with type 2 diabetes",
-            "LncRNA NEAT1 promotes epithelial-mesenchymal transition in ovarian cancer", "MicroRNA-29b regulates extracellular matrix production in diabetic nephropathy",
-            "Effects of resveratrol on lipid metabolism and insulin resistance", "The role of epigenetic modifications in the development of cancer",
-            "Evaluating the safety and efficacy of a new herbal supplement for weight loss", "The impact of maternal nutrition on fetal development and health outcomes",
-            "Genetic and environmental factors influencing the risk of autism spectrum disorder", "The use of artificial intelligence in medical imaging and diagnosis",
-            "Novel therapeutic targets for the treatment of inflammatory bowel disease", "The role of the microbiome in shaping immune system responses",
-            "LncRNA PVT1 promotes proliferation and invasion in pancreatic cancer", "MicroRNA-200c inhibits epithelial-mesenchymal transition in breast cancer",
-            "Effects of omega-3 fatty acids on cardiovascular health", "The relationship between sleep duration and risk of obesity",
-            "Interventions for preventing falls in older adults: a systematic review", "Pharmacological management of neuropathic pain: current guidelines",
-            "The role of mitochondrial dysfunction in aging and age-related diseases", "Efficacy of mindfulness-based stress reduction for improving mental health",
-            "Biomarkers of inflammation in patients with chronic obstructive pulmonary disease", "The impact of dietary patterns on the risk of developing type 2 diabetes",
-            "LncRNA GAS5 inhibits tumor growth and metastasis in lung cancer", "MicroRNA-34a induces apoptosis and cell cycle arrest in hepatocellular carcinoma",
-            "Effects of probiotics on gut health and immune function", "The role of genetic testing in personalized medicine",
-            "Evaluating the effectiveness of a new behavioral intervention for smoking cessation", "The impact of early life stress on brain development and mental health",
-            "Genetic susceptibility to autoimmune diseases: insights from genome-wide association studies", "The use of wearable devices for monitoring health and physical activity",
-            "Novel approaches for the treatment of drug-resistant infections", "The role of the gut-brain axis in regulating mood and behavior",
-            "LncRNA TUG1 promotes proliferation and migration in glioblastoma", "MicroRNA-125b regulates apoptosis and drug resistance in leukemia",
-            "Effects of intermittent fasting on metabolic health and longevity", "The relationship between physical activity and cognitive function in older adults",
-            "Interventions for improving medication adherence in patients with chronic diseases", "Pharmacological therapies for the management of Alzheimer's disease",
-            "The role of oxidative stress in the pathogenesis of cardiovascular diseases", "Efficacy of yoga for improving quality of life in patients with cancer",
-            "Biomarkers of endothelial dysfunction in patients with heart failure", "The impact of dietary sugar intake on the risk of metabolic syndrome",
-            "LncRNA UCA1 promotes proliferation and drug resistance in bladder cancer", "MicroRNA-15a/16-1 cluster regulates apoptosis in chronic lymphocytic leukemia",
-            "Effects of vitamin C supplementation on immune function and cold duration", "The role of gene therapy in treating inherited genetic disorders",
-            "Evaluating the safety and efficacy of a new targeted therapy for lung cancer", "The impact of social determinants of health on health disparities",
-            "Genetic variants associated with risk of type 1 diabetes", "The use of telemedicine for providing healthcare services remotely",
-            "Novel strategies for preventing and treating obesity", "The role of the immune system in recognizing and eliminating cancer cells",
-            "LncRNA XIST promotes tumor growth and metastasis in cervical cancer", "MicroRNA-10b promotes migration and invasion in metastatic breast cancer",
-            "Effects of dietary fiber on gut microbiota and metabolic health", "The relationship between stress and risk of cardiovascular disease",
-            "Interventions for promoting healthy aging and preventing cognitive decline", "Pharmacological management of heart failure: current guidelines and future directions",
-            "The role of inflammation in the pathogenesis of neurodegenerative diseases", "Efficacy of physical therapy for improving mobility in patients with Parkinson's disease",
-            "Biomarkers of kidney injury in patients with acute kidney injury", "The impact of dietary sodium intake on blood pressure and cardiovascular risk",
-            "LncRNA H19 promotes proliferation and invasion in hepatocellular carcinoma", "MicroRNA-210 regulates cellular response to hypoxia in cancer cells",
-            "Effects of green tea consumption on risk of cardiovascular disease and mortality", "The role of personalized medicine in improving cancer treatment outcomes"
+            "MiR-221/222 Ameliorates Deoxynivalenol-Induced Apoptosis and Proliferation Inhibition in Intestinal Epithelial Cells"
+            // ... Paste the rest from the R script output
         ];
 
         container.addEventListener('mousemove', (e) => {
@@ -344,26 +293,25 @@
             const speedBase = (2 + (1 - sizeMod) * 3); 
             const points = Math.floor((1 - sizeMod) * 40) + 10; 
 
-            // Pick a random edge to spawn from (0: Top, 1: Right, 2: Bottom, 3: Left)
             const edge = Math.floor(Math.random() * 4);
             let startX, startY, vx, vy;
 
-            if (edge === 0) {
+            if (edge === 0) { // Top
                 startX = Math.random() * (800 - width);
                 startY = -height;
-                vx = (Math.random() - 0.5) * 2; // Slight diagonal
+                vx = (Math.random() - 0.5) * 2; 
                 vy = speedBase;
-            } else if (edge === 1) {
+            } else if (edge === 1) { // Right
                 startX = 800;
                 startY = Math.random() * (600 - height);
                 vx = -speedBase;
                 vy = (Math.random() - 0.5) * 2;
-            } else if (edge === 2) {
+            } else if (edge === 2) { // Bottom
                 startX = Math.random() * (800 - width);
                 startY = 600;
                 vx = (Math.random() - 0.5) * 2;
                 vy = -speedBase;
-            } else {
+            } else { // Left
                 startX = -width;
                 startY = Math.random() * (600 - height);
                 vx = speedBase;
@@ -400,7 +348,6 @@
                     p.element.style.left = `${p.x}px`;
                     p.element.style.top = `${p.y}px`;
 
-                    // Remove if completely out of bounds in any direction
                     if (p.x > 900 || p.x < -200 || p.y > 700 || p.y < -200) {
                         p.element.remove();
                         papers.splice(i, 1);
@@ -415,10 +362,9 @@
             if (pIndex === -1) return;
             const p = papers[pIndex];
 
-            // Play Sound
             const sfx = stampAudioTemplate.cloneNode();
             sfx.volume = 0.5;
-            sfx.play().catch(e => console.log("Audio play blocked until user interaction", e));
+            sfx.play().catch(e => console.log("Audio play blocked", e));
 
             p.stamped = true;
             paperElement.dataset.stamped = "true";
@@ -457,6 +403,10 @@
             clearInterval(spawnIntervalId);
             cancelAnimationFrame(gameLoopId);
             
+            // Play Game Over Sound
+            gameOverAudio.volume = 0.7;
+            gameOverAudio.play().catch(e => console.log("Audio play blocked", e));
+
             finalScoreEl.innerText = score;
             gameOverScreen.classList.remove('hidden');
         }
