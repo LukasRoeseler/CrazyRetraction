@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retraction Hunter</title>
     <style>
-        /* Import a retro pixelated font */
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
         :root {
@@ -23,7 +22,7 @@
             height: 100vh;
             font-family: 'Press Start 2P', monospace;
             overflow: hidden;
-            user-select: none; /* Prevent text selection while clicking */
+            user-select: none;
         }
 
         #game-container {
@@ -39,11 +38,10 @@
             );
             border: 8px solid #222;
             overflow: hidden;
-            cursor: none; /* Hide default cursor */
+            cursor: none;
             box-shadow: 0 0 20px #000;
         }
 
-        /* UI Elements */
         #ui-layer {
             position: absolute;
             top: 0;
@@ -59,7 +57,6 @@
             pointer-events: none;
         }
 
-        /* Screens */
         .screen {
             position: absolute;
             top: 0;
@@ -76,9 +73,7 @@
             text-align: center;
         }
 
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
 
         h1 {
             color: #ff4444;
@@ -97,336 +92,10 @@
             margin-top: 20px;
         }
 
-        button:hover {
-            background: #ccc;
-        }
+        button:hover { background: #ccc; }
 
-        /* Custom Stamp Cursor */
         #stamp-cursor {
             position: absolute;
             width: 60px;
             height: 60px;
             pointer-events: none;
-            z-index: 999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.05s ease-out;
-        }
-
-        /* The handle of the stamp */
-        #stamp-cursor::before {
-            content: '';
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            width: 20px;
-            height: 30px;
-            background: #333;
-            border: 2px solid #000;
-        }
-
-        /* The base of the stamp */
-        #stamp-cursor::after {
-            content: '';
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            width: 40px;
-            height: 10px;
-            background: #555;
-            border: 2px solid #000;
-        }
-
-        .stamping {
-            transform: translate(-50%, -50%) scale(0.7) !important;
-        }
-
-        /* Paper Sheets */
-        .paper {
-            position: absolute;
-            background: #fff;
-            border: 2px solid #000;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        .paper-title {
-            font-size: 8px;
-            color: #333;
-            pointer-events: none;
-            line-height: 1.5;
-        }
-
-        /* Retracted Stamp Effect */
-        .retracted-mark {
-            position: absolute;
-            color: red;
-            border: 3px solid red;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 5px;
-            transform: rotate(-15deg);
-            opacity: 0.8;
-            pointer-events: none;
-            image-rendering: pixelated;
-        }
-
-        /* Floating Score Text */
-        .floating-score {
-            position: absolute;
-            color: yellow;
-            font-size: 16px;
-            text-shadow: 2px 2px #000;
-            pointer-events: none;
-            z-index: 150;
-            animation: floatUp 1s forwards;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
-        }
-    </style>
-</head>
-<body>
-
-    <div id="game-container">
-        <!-- UI -->
-        <div id="ui-layer">
-            <div>SCORE: <span id="score">0</span></div>
-            <div>TIME: <span id="time">30</span></div>
-        </div>
-
-        <!-- Start Screen -->
-        <div id="start-screen" class="screen">
-            <h1>RETRACTION<br>HUNTER</h1>
-            <p style="font-size: 12px; line-height: 2;">
-                Fake science is flying across your desk!<br><br>
-                Use your mouse to stamp them.<br>
-                Smaller/faster papers = More Points.<br>
-            </p>
-            <button onclick="startGame()">START SHIFT</button>
-        </div>
-
-        <!-- Game Over Screen -->
-        <div id="game-over-screen" class="screen hidden">
-            <h1>SHIFT OVER</h1>
-            <p>FINAL SCORE: <span id="final-score">0</span></p>
-            <button onclick="startGame()">PLAY AGAIN</button>
-        </div>
-
-        <!-- The Custom Cursor -->
-        <div id="stamp-cursor"></div>
-    </div>
-
-    <script>
-        // Game Constants & Variables
-        const container = document.getElementById('game-container');
-        const cursor = document.getElementById('stamp-cursor');
-        const scoreEl = document.getElementById('score');
-        const timeEl = document.getElementById('time');
-        const startScreen = document.getElementById('start-screen');
-        const gameOverScreen = document.getElementById('game-over-screen');
-        const finalScoreEl = document.getElementById('final-score');
-
-        let score = 0;
-        let timeLeft = 30;
-        let isPlaying = false;
-        let gameLoopId;
-        let spawnIntervalId;
-        let timerId;
-        let papers = [];
-
-        // Funny fake paper titles
-        const titles = [
-            "P-Hacking 101", "Cold Fusion", "Fake Data Sets", 
-            "N=1 Survey", "Cloned Blots", "Vaccine Hoax", 
-            "Flat Earth", "ChatGPT Wrote This", "Bribed Peer Review"
-        ];
-
-        // Custom Cursor Logic
-        container.addEventListener('mousemove', (e) => {
-            const rect = container.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            cursor.style.left = `${x}px`;
-            cursor.style.top = `${y}px`;
-        });
-
-        // Stamping (Click) Logic
-        container.addEventListener('mousedown', (e) => {
-            if (!isPlaying) return;
-            
-            // Visual stamp animation
-            cursor.classList.add('stamping');
-            setTimeout(() => cursor.classList.remove('stamping'), 100);
-
-            // Check if we clicked a paper
-            const clickedElement = e.target;
-            if (clickedElement.classList.contains('paper') && !clickedElement.dataset.stamped) {
-                stampPaper(clickedElement, e.clientX, e.clientY);
-            }
-        });
-
-        function startGame() {
-            // Reset state
-            score = 0;
-            timeLeft = 30;
-            scoreEl.innerText = score;
-            timeEl.innerText = timeLeft;
-            isPlaying = true;
-
-            // Clear old papers
-            papers.forEach(p => p.element.remove());
-            papers = [];
-
-            // UI
-            startScreen.classList.add('hidden');
-            gameOverScreen.classList.add('hidden');
-
-            // Start Loops
-            timerId = setInterval(updateTime, 1000);
-            spawnIntervalId = setInterval(spawnPaper, 800); // Spawn every 0.8s
-            lastTime = performance.now();
-            requestAnimationFrame(gameLoop);
-        }
-
-        function updateTime() {
-            timeLeft--;
-            timeEl.innerText = timeLeft;
-            if (timeLeft <= 0) {
-                endGame();
-            }
-        }
-
-        function spawnPaper() {
-            if (!isPlaying) return;
-
-            const paper = document.createElement('div');
-            paper.className = 'paper';
-            
-            // Randomize properties (Speed, Size, Direction)
-            const isLeftToRight = Math.random() > 0.5;
-            const sizeMod = Math.random(); // 0.0 to 1.0
-            
-            // Smaller = Faster = More points
-            const width = 80 + (sizeMod * 60); // 80px to 140px
-            const height = 60 + (sizeMod * 40);
-            const speed = (2 + (1 - sizeMod) * 3) * (isLeftToRight ? 1 : -1); 
-            const points = Math.floor((1 - sizeMod) * 40) + 10; // 10 to 50 points
-
-            paper.style.width = `${width}px`;
-            paper.style.height = `${height}px`;
-            
-            // Initial position
-            const startY = 100 + Math.random() * 350; // Keep within desk bounds
-            const startX = isLeftToRight ? -width : 800;
-
-            paper.style.top = `${startY}px`;
-            paper.style.left = `${startX}px`;
-
-            // Inner Text
-            const title = titles[Math.floor(Math.random() * titles.length)];
-            paper.innerHTML = `<span class="paper-title">${title}</span>`;
-
-            // Append to DOM and Array
-            container.appendChild(paper);
-            
-            papers.push({
-                element: paper,
-                x: startX,
-                y: startY,
-                vx: speed,
-                width: width,
-                points: points,
-                stamped: false
-            });
-        }
-
-        let lastTime = 0;
-        function gameLoop(currentTime) {
-            if (!isPlaying) return;
-
-            // Calculate delta time to keep speed consistent regardless of framerate
-            const deltaTime = (currentTime - lastTime) / 16; 
-            lastTime = currentTime;
-
-            for (let i = papers.length - 1; i >= 0; i--) {
-                const p = papers[i];
-
-                if (!p.stamped) {
-                    p.x += p.vx * deltaTime;
-                    p.element.style.left = `${p.x}px`;
-
-                    // Remove if out of bounds
-                    if ((p.vx > 0 && p.x > 850) || (p.vx < 0 && p.x < -200)) {
-                        p.element.remove();
-                        papers.splice(i, 1);
-                    }
-                }
-            }
-
-            gameLoopId = requestAnimationFrame(gameLoop);
-        }
-
-        function stampPaper(paperElement, clickX, clickY) {
-            // Find paper object
-            const pIndex = papers.findIndex(p => p.element === paperElement);
-            if (pIndex === -1) return;
-            const p = papers[pIndex];
-
-            // Mark as stamped
-            p.stamped = true;
-            paperElement.dataset.stamped = "true";
-            
-            // Add Points
-            score += p.points;
-            scoreEl.innerText = score;
-
-            // Visual: Retracted text
-            const mark = document.createElement('div');
-            mark.className = 'retracted-mark';
-            mark.innerText = 'RETRACTED';
-            paperElement.appendChild(mark);
-
-            // Visual: Floating points
-            const rect = container.getBoundingClientRect();
-            const floatText = document.createElement('div');
-            floatText.className = 'floating-score';
-            floatText.innerText = `+${p.points}`;
-            floatText.style.left = `${clickX - rect.left}px`;
-            floatText.style.top = `${clickY - rect.top}px`;
-            container.appendChild(floatText);
-
-            // Make paper "fall" off desk
-            paperElement.style.transition = "top 1s ease-in, opacity 1s";
-            paperElement.style.top = `${p.y + 200}px`;
-            paperElement.style.opacity = "0";
-
-            // Cleanup DOM
-            setTimeout(() => {
-                paperElement.remove();
-                floatText.remove();
-                // Remove from array safely
-                const indexToRemove = papers.indexOf(p);
-                if(indexToRemove > -1) papers.splice(indexToRemove, 1);
-            }, 1000);
-        }
-
-        function endGame() {
-            isPlaying = false;
-            clearInterval(timerId);
-            clearInterval(spawnIntervalId);
-            cancelAnimationFrame(gameLoopId);
-            
-            finalScoreEl.innerText = score;
-            gameOverScreen.classList.remove('hidden');
-        }
-
-    </script>
-</body>
-</html>
