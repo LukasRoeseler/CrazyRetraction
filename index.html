@@ -42,11 +42,21 @@
             box-shadow: 0 0 20px #000;
         }
 
+        /* Screen Flash for Mistakes */
+        #flash-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 0, 0, 0.4);
+            z-index: 180;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s;
+        }
+        .flash { opacity: 1 !important; }
+
         #ui-layer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+            top: 0; left: 0; width: 100%;
             padding: 20px;
             box-sizing: border-box;
             display: flex;
@@ -59,11 +69,8 @@
 
         .screen {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -71,6 +78,8 @@
             color: white;
             z-index: 200;
             text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .hidden { display: none !important; }
@@ -79,6 +88,30 @@
             color: #ff4444;
             text-shadow: 4px 4px #000;
             line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .credits {
+            font-size: 8px;
+            color: #888;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        .instructions {
+            font-size: 10px;
+            line-height: 1.8;
+            background: #222;
+            border: 2px solid #555;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        .badge-demo {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
         }
 
         button {
@@ -90,121 +123,206 @@
             font-size: 16px;
             cursor: none;
             margin-top: 20px;
+            transition: transform 0.1s;
         }
+        button:hover { background: #ccc; transform: scale(1.05); }
 
-        button:hover { background: #ccc; }
+        /* Cooler Scoreboard */
+        .score-board {
+            background: #111;
+            border: 4px solid #ffd700;
+            padding: 20px 40px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), inset 0 0 10px #ffd700;
+            margin: 20px 0;
+        }
+        .score-board h2 { color: #ffd700; margin: 0 0 15px 0; text-shadow: 2px 2px #000; }
+        .score-board p { font-size: 12px; color: #aaa; margin: 10px 0 0 0; }
+        #rank-display { color: #fff; text-shadow: 1px 1px #ff00ff; }
 
+        /* Improved Stamp Cursor */
         #stamp-cursor {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 70px;
             pointer-events: none;
             z-index: 999;
-            transform: translate(-50%, -50%);
+            /* Transform origin is bottom-center so the mouse matches the contact point exactly */
+            transform: translate(-50%, -100%);
             transition: transform 0.05s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+        
+        .stamping { transform: translate(-50%, -100%) translateY(10px) scale(0.9) !important; }
 
+        /* Handle top */
         #stamp-cursor::before {
             content: '';
+            width: 24px; height: 35px;
+            background: linear-gradient(to right, #6b4c3a, #8b6b55, #6b4c3a);
+            border: 2px solid #222;
+            border-radius: 12px 12px 0 0;
+        }
+        /* Base wood */
+        #stamp-cursor .base {
+            width: 46px; height: 15px;
+            background: linear-gradient(to right, #d4a373, #faedcd, #d4a373);
+            border: 2px solid #222;
+            border-radius: 4px 4px 0 0;
+            margin-top: -2px;
+        }
+        /* Rubber stamp bottom */
+        #stamp-cursor .rubber {
+            width: 42px; height: 8px;
+            background: #a11;
+            border: 2px solid #400;
+            border-top: none;
+        }
+        /* Crosshair targeting dot */
+        #stamp-cursor .crosshair {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
-            width: 20px;
-            height: 30px;
-            background: #333;
-            border: 2px solid #000;
+            bottom: -3px;
+            width: 4px; height: 4px;
+            background: red;
+            border-radius: 50%;
+            box-shadow: 0 0 4px #000;
         }
 
-        #stamp-cursor::after {
-            content: '';
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            width: 40px;
-            height: 10px;
-            background: #555;
-            border: 2px solid #000;
-        }
-
-        .stamping { transform: translate(-50%, -50%) scale(0.7) !important; }
-
+        /* Papers */
         .paper {
             position: absolute;
             background: #fff;
             border: 2px solid #000;
             box-shadow: 4px 4px 0 rgba(0,0,0,0.3);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            padding: 10px;
+            padding: 8px;
             box-sizing: border-box;
             text-align: center;
         }
 
         .paper-title {
-            font-size: 8px;
+            font-size: 7px;
             color: #333;
             pointer-events: none;
-            line-height: 1.5;
+            line-height: 1.4;
             word-wrap: break-word;
             overflow: hidden;
-            max-height: 100%;
+            flex-grow: 1;
         }
 
-        .retracted-mark {
-            position: absolute;
-            color: red;
-            border: 3px solid red;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 5px;
-            transform: rotate(-15deg);
-            opacity: 0.8;
+        /* Open Science Badges (Pixelated) */
+        .badges-container {
+            display: flex;
+            gap: 4px;
+            margin-top: 5px;
             pointer-events: none;
-            image-rendering: pixelated;
+        }
+        .os-badge {
+            width: 14px; height: 14px;
+            border: 2px solid #111;
+            position: relative;
+            background-color: #fff;
+            /* Hexagon-ish look using clip-path, but blocky for pixel art */
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        .os-badge.prereg { background-color: #d32f2f; } /* Red */
+        .os-badge.data { background-color: #1976d2; }   /* Blue */
+        .os-badge.materials { background-color: #f57c00; } /* Yellow */
+        
+        /* Inner tiny pixel graphics for badges */
+        .os-badge::after {
+            content: ''; position: absolute; top: 3px; left: 3px; width: 8px; height: 8px;
+        }
+        .os-badge.prereg::after { background: repeating-linear-gradient(45deg, transparent, transparent 2px, white 2px, white 4px); }
+        .os-badge.data::after { border-left: 2px solid white; border-bottom: 2px solid white; }
+        .os-badge.materials::after { border: 2px solid white; box-sizing: border-box; }
+
+        /* Marks */
+        .retracted-mark {
+            position: absolute; top: 50%; left: 50%;
+            color: red; border: 3px solid red; font-size: 10px; font-weight: bold;
+            padding: 5px; transform: translate(-50%, -50%) rotate(-15deg);
+            opacity: 0.9; pointer-events: none; text-shadow: 1px 1px #000;
+        }
+        .error-mark {
+            position: absolute; top: 50%; left: 50%;
+            color: #fff; background: red; border: 2px solid #000; font-size: 10px;
+            padding: 5px; transform: translate(-50%, -50%) rotate(10deg);
+            pointer-events: none;
         }
 
+        /* Floating Score Text */
         .floating-score {
             position: absolute;
-            color: yellow;
-            font-size: 16px;
-            text-shadow: 2px 2px #000;
-            pointer-events: none;
-            z-index: 150;
+            font-size: 16px; text-shadow: 2px 2px #000;
+            pointer-events: none; z-index: 150;
             animation: floatUp 1s forwards;
         }
+        .score-pos { color: yellow; }
+        .score-neg { color: #ff4444; }
 
         @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-50px) scale(1.5); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
     <div id="game-container">
+        <div id="flash-overlay"></div>
+
         <div id="ui-layer">
             <div>SCORE: <span id="score">0</span></div>
             <div>TIME: <span id="time">30</span></div>
         </div>
 
+        <!-- START SCREEN -->
         <div id="start-screen" class="screen">
             <h1>RETRACTION<br>HUNTER</h1>
-            <p style="font-size: 12px; line-height: 2;">
-                Fake science is flying across your desk!<br><br>
-                Use your mouse to stamp them.<br>
-                Smaller/faster papers = More Points.<br>
-            </p>
+            
+            <div class="instructions">
+                <p><strong>MISSION:</strong> Stamp retracted papers before they escape!<br>Smaller/faster papers = More Points.</p>
+                
+                <p style="color: #ffaa00; margin-top:10px;"><strong>WARNING: DO NOT STAMP OPEN SCIENCE!</strong></p>
+                <p>Papers with these badges are good science. Stamping them loses you 50 points!</p>
+                <div style="margin-top: 5px;">
+                    <div class="badge-demo os-badge prereg"></div> Preregistered<br><br>
+                    <div class="badge-demo os-badge data"></div> Open Data<br><br>
+                    <div class="badge-demo os-badge materials"></div> Open Materials
+                </div>
+            </div>
+
             <button onclick="startGame()">START SHIFT</button>
+            
+            <div class="credits">
+                Titles of retracted papers provided by the Retraction Watch Database.<br>
+                Game design & code generated by AI.
+            </div>
         </div>
 
+        <!-- GAME OVER SCREEN -->
         <div id="game-over-screen" class="screen hidden">
             <h1>SHIFT OVER</h1>
-            <p>FINAL SCORE: <span id="final-score">0</span></p>
+            
+            <div class="score-board">
+                <h2>FINAL SCORE: <span id="final-score">0</span></h2>
+                <p>RANK: <span id="rank-display">Intern</span></p>
+            </div>
+
             <button onclick="startGame()">PLAY AGAIN</button>
         </div>
 
-        <div id="stamp-cursor"></div>
+        <!-- STAMP CURSOR -->
+        <div id="stamp-cursor">
+            <div class="base"></div>
+            <div class="rubber"></div>
+            <div class="crosshair"></div>
+        </div>
     </div>
 
     <script>
@@ -215,29 +333,92 @@
         const startScreen = document.getElementById('start-screen');
         const gameOverScreen = document.getElementById('game-over-screen');
         const finalScoreEl = document.getElementById('final-score');
+        const rankDisplayEl = document.getElementById('rank-display');
+        const flashOverlay = document.getElementById('flash-overlay');
 
         // Audio setup
         const stampAudioTemplate = new Audio('Sounds/freesound_community-stamp-102627.mp3');
         const gameOverAudio = new Audio('Sounds/audley_fergine-game-over-classic-206486.mp3');
+        
+        // Web Audio API for synthesizing the "Error/Penalty" buzzer sound
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playErrorSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.3);
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.3);
+        }
 
         let score = 0;
         let timeLeft = 30;
         let isPlaying = false;
-        let gameLoopId;
-        let spawnIntervalId;
-        let timerId;
+        let gameLoopId, spawnIntervalId, timerId;
         let papers = [];
 
-        // Add your 100 generated titles here
-        const titles = [
+        // --- TITLE DATABASES ---
+        const badTitlesMaster = [
             "Preoperative risk factors for intraabdominal adhesions should not contraindicate surgical laparoscopy for infertility",
             "Effect of cervical lidocaine-prilocaine cream on pain perception during copper T380A intrauterine device insertion",
-            "Management of Spontaneous Labor in Primigravidae: Labor Scale versus WHO Partograph (SLiP Trial)",
+            "Management of Spontaneous Labor in Primigravidae: Labor Scale versus WHO Partograph",
             "AFAP1-AS1 Promotes Epithelial-Mesenchymal Transition and Tumorigenesis Through Wnt/β-Catenin Signaling Pathway",
-            "MiR-221/222 Ameliorates Deoxynivalenol-Induced Apoptosis and Proliferation Inhibition in Intestinal Epithelial Cells"
-            // ... Paste the rest from the R script output
+            "MiR-221/222 Ameliorates Deoxynivalenol-Induced Apoptosis and Proliferation Inhibition",
+            "Application of artificial intelligence-assisted Traditional Chinese medicine formula granules",
+            "LncRNA MALAT1 promotes tumor progression in gastric cancer by targeting miR-124",
+            "Knockdown of circRNA_100876 suppresses proliferation and metastasis of osteosarcoma",
+            "Efficacy of acupuncture in treating chronic lower back pain: a meta-analysis",
+            "Stem cell therapy for spinal cord injury: current status and future perspectives",
+            "LncRNA HOTAIR promotes tumor growth and metastasis in colorectal cancer",
+            "The impact of maternal nutrition on fetal development and health outcomes",
+            "LncRNA PVT1 promotes proliferation and invasion in pancreatic cancer",
+            "MicroRNA-125b regulates apoptosis and drug resistance in leukemia",
+            "Effects of intermittent fasting on metabolic health and longevity"
         ];
 
+        const goodTitlesMaster = [
+            "A Multi-Lab Replication of the Stroop Effect in Bilingual Contexts",
+            "Open Dataset: Global Ocean Surface Temperature Anomalies (1950-2023)",
+            "Preregistered Analysis of Cognitive Behavioral Therapy for Insomnia",
+            "Null Results in the Association Between Coffee Intake and Memory Recall",
+            "A Comprehensive Re-evaluation of Ego Depletion: Registered Replication Report",
+            "Open Materials and Code for Simulation of Protein Folding Pathways",
+            "Longitudinal Study of Sleep Deprivation (Preregistered Protocol)",
+            "Replicating the Facial Feedback Hypothesis in a Large Online Cohort",
+            "Transparent Reporting of Antibody Validation in Neurobiology",
+            "An Open Source Pipeline for fMRI Data Preprocessing"
+        ];
+
+        // "Bag" randomizer state
+        let availableBadTitles = [];
+        let availableGoodTitles = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function getNextTitle(isGood) {
+            let pool = isGood ? availableGoodTitles : availableBadTitles;
+            let master = isGood ? goodTitlesMaster : badTitlesMaster;
+            
+            // Refill bag if empty
+            if (pool.length === 0) {
+                pool.push(...master);
+                shuffleArray(pool);
+            }
+            return pool.pop();
+        }
+
+        // --- INPUT HANDLING ---
         container.addEventListener('mousemove', (e) => {
             const rect = container.getBoundingClientRect();
             cursor.style.left = `${e.clientX - rect.left}px`;
@@ -256,6 +437,7 @@
             }
         });
 
+        // --- GAME LOGIC ---
         function startGame() {
             score = 0;
             timeLeft = 30;
@@ -263,8 +445,15 @@
             timeEl.innerText = timeLeft;
             isPlaying = true;
 
+            // Clear board
             papers.forEach(p => p.element.remove());
             papers = [];
+            
+            // Initial Shuffle of titles for the new game
+            availableBadTitles = [...badTitlesMaster];
+            availableGoodTitles = [...goodTitlesMaster];
+            shuffleArray(availableBadTitles);
+            shuffleArray(availableGoodTitles);
 
             startScreen.classList.add('hidden');
             gameOverScreen.classList.add('hidden');
@@ -272,6 +461,10 @@
             timerId = setInterval(updateTime, 1000);
             spawnIntervalId = setInterval(spawnPaper, 600); 
             lastTime = performance.now();
+            
+            // Resume Audio Context if needed
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
             requestAnimationFrame(gameLoop);
         }
 
@@ -288,34 +481,31 @@
             paper.className = 'paper';
             
             const sizeMod = Math.random(); 
-            const width = 80 + (sizeMod * 60); 
-            const height = 60 + (sizeMod * 40);
+            const width = 90 + (sizeMod * 50); 
+            const height = 70 + (sizeMod * 30);
             const speedBase = (2 + (1 - sizeMod) * 3); 
             const points = Math.floor((1 - sizeMod) * 40) + 10; 
 
+            // 25% chance to be an Open Science Paper
+            const isGoodScience = Math.random() < 0.25;
+            paper.dataset.isGood = isGoodScience;
+
+            // Spawn Position Logic
             const edge = Math.floor(Math.random() * 4);
             let startX, startY, vx, vy;
 
             if (edge === 0) { // Top
-                startX = Math.random() * (800 - width);
-                startY = -height;
-                vx = (Math.random() - 0.5) * 2; 
-                vy = speedBase;
+                startX = Math.random() * (800 - width); startY = -height;
+                vx = (Math.random() - 0.5) * 2; vy = speedBase;
             } else if (edge === 1) { // Right
-                startX = 800;
-                startY = Math.random() * (600 - height);
-                vx = -speedBase;
-                vy = (Math.random() - 0.5) * 2;
+                startX = 800; startY = Math.random() * (600 - height);
+                vx = -speedBase; vy = (Math.random() - 0.5) * 2;
             } else if (edge === 2) { // Bottom
-                startX = Math.random() * (800 - width);
-                startY = 600;
-                vx = (Math.random() - 0.5) * 2;
-                vy = -speedBase;
+                startX = Math.random() * (800 - width); startY = 600;
+                vx = (Math.random() - 0.5) * 2; vy = -speedBase;
             } else { // Left
-                startX = -width;
-                startY = Math.random() * (600 - height);
-                vx = speedBase;
-                vy = (Math.random() - 0.5) * 2;
+                startX = -width; startY = Math.random() * (600 - height);
+                vx = speedBase; vy = (Math.random() - 0.5) * 2;
             }
 
             paper.style.width = `${width}px`;
@@ -323,13 +513,27 @@
             paper.style.top = `${startY}px`;
             paper.style.left = `${startX}px`;
 
-            const title = titles[Math.floor(Math.random() * titles.length)];
-            paper.innerHTML = `<span class="paper-title">${title}</span>`;
+            // Build Inner Content
+            const title = getNextTitle(isGoodScience);
+            let innerHTML = `<span class="paper-title">${title}</span>`;
+            
+            if (isGoodScience) {
+                // Add 1 to 3 random badges
+                innerHTML += `<div class="badges-container">`;
+                const badgeTypes = ['prereg', 'data', 'materials'];
+                shuffleArray(badgeTypes);
+                const numBadges = Math.floor(Math.random() * 3) + 1;
+                for(let i=0; i<numBadges; i++) {
+                    innerHTML += `<div class="os-badge ${badgeTypes[i]}"></div>`;
+                }
+                innerHTML += `</div>`;
+            }
 
+            paper.innerHTML = innerHTML;
             container.appendChild(paper);
             
             papers.push({
-                element: paper, x: startX, y: startY, vx: vx, vy: vy, points: points, stamped: false
+                element: paper, x: startX, y: startY, vx: vx, vy: vy, points: points, stamped: false, isGood: isGoodScience
             });
         }
 
@@ -362,27 +566,47 @@
             if (pIndex === -1) return;
             const p = papers[pIndex];
 
-            const sfx = stampAudioTemplate.cloneNode();
-            sfx.volume = 0.5;
-            sfx.play().catch(e => console.log("Audio play blocked", e));
-
             p.stamped = true;
             paperElement.dataset.stamped = "true";
             
-            score += p.points;
-            scoreEl.innerText = score;
-
-            const mark = document.createElement('div');
-            mark.className = 'retracted-mark';
-            mark.innerText = 'RETRACTED';
-            paperElement.appendChild(mark);
-
             const rect = container.getBoundingClientRect();
             const floatText = document.createElement('div');
             floatText.className = 'floating-score';
-            floatText.innerText = `+${p.points}`;
             floatText.style.left = `${clickX - rect.left}px`;
             floatText.style.top = `${clickY - rect.top}px`;
+
+            const mark = document.createElement('div');
+
+            if (p.isGood) {
+                // PENALTY MECHANIC
+                score -= 50;
+                playErrorSound();
+                
+                // Screen flash
+                flashOverlay.classList.add('flash');
+                setTimeout(() => flashOverlay.classList.remove('flash'), 150);
+
+                // Visuals
+                mark.className = 'error-mark';
+                mark.innerText = 'VALID!';
+                floatText.classList.add('score-neg');
+                floatText.innerText = `-50`;
+            } else {
+                // REWARD MECHANIC
+                score += p.points;
+                const sfx = stampAudioTemplate.cloneNode();
+                sfx.volume = 0.5;
+                sfx.play().catch(e => console.log("Audio block", e));
+
+                // Visuals
+                mark.className = 'retracted-mark';
+                mark.innerText = 'RETRACTED';
+                floatText.classList.add('score-pos');
+                floatText.innerText = `+${p.points}`;
+            }
+
+            scoreEl.innerText = score;
+            paperElement.appendChild(mark);
             container.appendChild(floatText);
 
             paperElement.style.transition = "transform 0.5s ease-in, opacity 0.5s";
@@ -403,11 +627,18 @@
             clearInterval(spawnIntervalId);
             cancelAnimationFrame(gameLoopId);
             
-            // Play Game Over Sound
             gameOverAudio.volume = 0.7;
-            gameOverAudio.play().catch(e => console.log("Audio play blocked", e));
+            gameOverAudio.play().catch(e => console.log("Audio block", e));
 
             finalScoreEl.innerText = score;
+
+            // Determine Rank
+            let rank = "Lab Assistant";
+            if (score < 0) rank = "Fired for Malpractice";
+            else if (score > 500) rank = "Peer Review Champion";
+            else if (score > 250) rank = "Tenured Editor";
+            
+            rankDisplayEl.innerText = rank;
             gameOverScreen.classList.remove('hidden');
         }
     </script>
